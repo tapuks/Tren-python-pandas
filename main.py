@@ -21,7 +21,7 @@ class Tren:
         self.lista_solar_2 = []
         self.lista_solar_3 = []
         self.lista_record = []
-        #self.lista_distancia_al_origen=[]
+        self.lista_distancia_al_origen=[]
         self.lista_distancia_al_origen_round=[]
         self.lista_coordenadas_xr = []
         self.lista_coordenadas_yr = []
@@ -125,7 +125,7 @@ class Tren:
 
         for i in self.df_resultados.index:
             print(i)
-            dc = self.df_resultados['D.O'][i]
+            dc = self.df_resultados['D.O'][i]-688
             sen = 0
             cos = 1
             ce = dc * sen

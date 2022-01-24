@@ -28,6 +28,7 @@ class Tren:
         self.df_resultados =[]
         self.error_RECR = 0
         self.baliza_real = 0
+        self.distancia_remanente =0
 
 
     def __str__(self):
@@ -42,6 +43,8 @@ class Tren:
                f'\nLa distancia al origen de valiza2 es: {self.distancia_origen_valiza2}' \
                f'\nLa longitud de cada seccion es: {self.longitud_seccion} mm' \
                f'\nLas balizas reales que forman el paquete son baliza {self.primeraValiza} y {self.baliza_real}'
+
+
 
     def set_numero_vueltas_paquete(self):
         # Capturamos la fila de la Primera Valiza
@@ -112,46 +115,105 @@ class Tren:
         'D.O': self.lista_distancia_al_origen_round})
 
     def get_coordenadas_xr_yr(self):
-        cordenada_x_inicial=df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['X']
-        cordenada_y_inicial=df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['Y']
+        print(df_circuito)
+        cordenada_x_inicial_seccion_via=df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['X']
+        registo_x_incial = df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['Registro']
+        cordenada_x_final_seccion_via = df_circuito.loc[df_circuito['Registro'] == registo_x_incial + 1].iloc[0]['X']
 
-        cordenada_x_final = df_circuito.loc[df_circuito['Valizas Acum.'] == self.segundaValiza].iloc[0]['X']
-        cordenada_y_final = df_circuito.loc[df_circuito['Valizas Acum.'] == self.segundaValiza].iloc[0]['Y']
+        cordenada_y_inicial_seccion_via=df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['Y']
+        cordenada_y_final_seccion_via = df_circuito.loc[df_circuito['Registro'] ==  registo_x_incial+1].iloc[0]['Y']
 
-        print('cordenadaxinice', cordenada_x_inicial)
-        print('cordenadayinici', cordenada_y_inicial)
-        print('cordenadaXfinal', cordenada_x_final)
-        print('cordenadayfinal', cordenada_y_final)
+        longitud_via_estudiada = df_circuito.loc[df_circuito['Registro'] == registo_x_incial + 1].iloc[0]['mm de via']
 
+
+
+        print('cordenadaxinice', cordenada_x_inicial_seccion_via)
+        print('cordenadayinici', cordenada_y_inicial_seccion_via)
+        print('cordenadaXfinal', cordenada_x_final_seccion_via)
+        print('cordenadayfinal', cordenada_y_final_seccion_via)
+        print('longitud_via_estudiada', longitud_via_estudiada)
+
+        xrf = 0
+        yrf = 0
+        ce= 0
+        de = 0
+        distancia_remanente = 0
         for i in self.df_resultados.index:
-            print(i)
-            dc = self.df_resultados['D.O'][i]-688
-            sen = 0
-            cos = 1
-            ce = dc * sen
-            de = dc * cos
-            print("dc", dc)
-            print("ce", ce)
-            print("de", de)
-            xr = 0
-            yr =0
-            if (cordenada_x_inicial - cordenada_x_final) >0:
-                xr = cordenada_x_inicial - de
-            else:
-                xr = cordenada_x_inicial + de
-            if (cordenada_y_inicial - cordenada_y_final) >0:
-                yr = cordenada_y_inicial - ce
-            else:
-                yr= cordenada_y_inicial + ce
+            if i ==1:
+                bc = cordenada_y_inicial_seccion_via - cordenada_y_final_seccion_via
+                ab = cordenada_x_inicial_seccion_via - cordenada_x_final_seccion_via
+                ac = math.sqrt(pow(ab, 2) + pow(bc, 2))
+
+                sen_fi = bc / ac
+                arc_sen_fi = 0
+                cos_fi = 1
+
+                dc = self.longitud_seccion
+                ce = dc * sen_fi
+                de = dc * cos_fi
+
+                if (cordenada_x_inicial_seccion_via - cordenada_x_final_seccion_via) > 0:
+                    xrf = cordenada_x_inicial_seccion_via - de
+                else:
+                    xrf = cordenada_x_inicial_seccion_via + de
+
+                if (cordenada_y_inicial_seccion_via - cordenada_y_final_seccion_via) > 0:
+                    yrf = cordenada_y_inicial_seccion_via - ce
+                else:
+                    yrf = cordenada_y_inicial_seccion_via + ce
+
+                self.lista_coordenadas_xr.append(xrf)
+                self.lista_coordenadas_yr.append(yrf)
+            else :
+                distancia_remanente = distancia_remanente + self.longitud_seccion
+                if (distancia_remanente + self.longitud_seccion) <= longitud_via_estudiada :
+                    if (cordenada_x_inicial_seccion_via - cordenada_x_final_seccion_via) > 0:
+                        xrf = cordenada_x_inicial_seccion_via - de
+                    else:
+                        xrf = cordenada_x_inicial_seccion_via + de
+
+                    if (cordenada_y_inicial_seccion_via - cordenada_y_final_seccion_via) > 0:
+                        yrf = cordenada_y_inicial_seccion_via - ce
+                    else:
+                        yrf = cordenada_y_inicial_seccion_via + ce
+
+                    self.lista_coordenadas_xr.append(xrf)
+                    self.lista_coordenadas_yr.append(yrf)
+                    print("primer tramo")
+                else :
+                    print('Siguiente tramooooooooooooooo')
 
 
 
-            self.lista_coordenadas_xr.append(xr)
-            self.lista_coordenadas_yr.append(yr)
 
-        self.df_resultados['Xr'] = self.lista_coordenadas_xr
-        self.df_resultados['Yr'] = self.lista_coordenadas_yr
-        print(self.df_resultados)
+
+        #     dc = self.df_resultados['D.O'][i]-688
+        #     sen = 0
+        #     cos = 1
+        #     ce = dc * sen
+        #     de = dc * cos
+        #     print("dc", dc)
+        #     print("ce", ce)
+        #     print("de", de)
+        #     xr = 0
+        #     yr =0
+        #     if (cordenada_x_inicial - cordenada_x_final) >0:
+        #         xr = cordenada_x_inicial - de
+        #     else:
+        #         xr = cordenada_x_inicial + de
+        #     if (cordenada_y_inicial - cordenada_y_final) >0:
+        #         yr = cordenada_y_inicial - ce
+        #     else:
+        #         yr= cordenada_y_inicial + ce
+        #
+        #
+        #
+        #     self.lista_coordenadas_xr.append(xr)
+        #     self.lista_coordenadas_yr.append(yr)
+        #
+        # self.df_resultados['Xr'] = self.lista_coordenadas_xr
+        # self.df_resultados['Yr'] = self.lista_coordenadas_yr
+
 
 
 

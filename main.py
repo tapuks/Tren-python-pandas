@@ -122,8 +122,12 @@ class Tren:
 
         cordenada_y_inicial_seccion_via=df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['Y']
         cordenada_y_final_seccion_via = df_circuito.loc[df_circuito['Registro'] ==  registo_x_incial+1].iloc[0]['Y']
+        registro_siguiente = registo_x_incial +1
+        print(registro_siguiente, 'registro siguiete')
 
-        longitud_via_estudiada = df_circuito.loc[df_circuito['Registro'] == registo_x_incial + 1].iloc[0]['mm de via']
+        longitud_via_estudiada = df_circuito.loc[df_circuito['Registro'] == registro_siguiente ].iloc[0]['mm de via']
+
+
 
 
 
@@ -181,7 +185,10 @@ class Tren:
                     self.lista_coordenadas_yr.append(yrf)
                     print("primer tramo")
                 else :
-                    print('Siguiente tramooooooooooooooo')
+                    registro_siguiente= registro_siguiente +1
+                    longitud_via_estudiada = df_circuito.loc[df_circuito['Registro'] == registro_siguiente].iloc[0][
+                        'mm de via']
+                    print('longitu de via nuevo tramo', longitud_via_estudiada)
 
 
 

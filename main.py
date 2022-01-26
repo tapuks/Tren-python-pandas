@@ -156,91 +156,138 @@ class Tren:
         # de = dc * cos_fi
 
         #---------------------------------------------------------
-
         cordenada_x_inicial_seccion_via = df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['X']
         registo_x_incial = df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['Registro']
         cordenada_x_final_seccion_via = df_circuito.loc[df_circuito['Registro'] == registo_x_incial + 1].iloc[0]['X']
+        registro_siguiente = registo_x_incial
+        contador = 0
+        self.lista_coordenadas_xr.append(round(cordenada_x_inicial_seccion_via))
+        seccion_new = True
+        longitud_via_estudiada = df_circuito.loc[df_circuito['Registro'] == registo_x_incial + 1].iloc[0]['mm de via']
 
-        for i in self.df_resultados.index +1:
-            print(i)
-            if i ==1 :
-                cordenada_x_inicial_seccion_via = df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['X']
-                registo_x_incial = df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['Registro']
-                cordenada_x_final_seccion_via = df_circuito.loc[df_circuito['Registro'] == registo_x_incial + 1].iloc[0]['X']
-                registro_siguiente = registo_x_incial + 1
-                longitud_via_estudiada = df_circuito.loc[df_circuito['Registro'] == registro_siguiente].iloc[0]['mm de via']
-                self.lista_coordenadas_xr.append(round(cordenada_x_inicial_seccion_via))
+        while True:
+            print(contador)
+            contador= contador +1
+            if len(self.lista_coordenadas_xr) ==2:
+                break
 
-            elif i ==2 :
+
+            if seccion_new == True:
                 bc = cordenada_y_inicial_seccion_via - cordenada_y_final_seccion_via
                 ab = cordenada_x_inicial_seccion_via - cordenada_x_final_seccion_via
                 ac = math.sqrt(pow(ab, 2) + pow(bc, 2))
                 sen_fi = bc / ac
                 cos_fi = 1
-                dc = self.longitud_seccion
+                # dc = self.longitud_seccion
+                dc = self.longitud_seccion - distancia_remanente
+                seccion_new = False
+
+            if distancia_remanente + self.longitud_seccion < longitud_via_estudiada:
+                distancia_remanente = distancia_remanente + self.longitud_seccion
                 ce = dc * sen_fi
                 de = dc * cos_fi
+
+
+
                 if (cordenada_x_inicial_seccion_via - cordenada_x_final_seccion_via) > 0:
                     xrf = cordenada_x_inicial_seccion_via - de
-
                 else:
                     xrf = cordenada_x_inicial_seccion_via + de
                 self.lista_coordenadas_xr.append(round(xrf))
+                print("la lista añadido valor", self.lista_coordenadas_xr)
             else:
+                print(self.lista_coordenadas_xr)
+                break
 
-                print('cordenadaFinal_iffff', cordenada_x_final_seccion_via)
 
-                distancia_remanente = distancia_remanente + self.longitud_seccion
-                print('distancia rem',distancia_remanente)
-                print('logitud-via', longitud_via_estudiada)
-                if (distancia_remanente + self.longitud_seccion) < longitud_via_estudiada:
-                    print('siiiiii')
-                    dc = self.longitud_seccion
-                    ce = dc * sen_fi
-                    de = dc * cos_fi
-                    if (cordenada_x_inicial_seccion_via - cordenada_x_final_seccion_via) > 0:
-                        xrf = self.lista_coordenadas_xr[i-2] - de
-                        print("la lista", self.lista_coordenadas_xr)
-                        print("anterior array",self.lista_coordenadas_xr[i-2])
-                        print('aqui de', de)
-                    else:
-                        xrf = self.lista_coordenadas_xr[i-2] + de
-                    self.lista_coordenadas_xr.append(round(xrf))
-                    print("la lista añadido valor", self.lista_coordenadas_xr)
-                else:
-                    if (i==10):
-                        print("aqui el diez")
-                    print('cordenadaIncial_elseee', cordenada_x_final_seccion_via)
 
-                    # self.lista_coordenadas_xr.append(round(0))
-                    print('distancia remanente al entrar al else', distancia_remanente)
-                    distancia_remanente = longitud_via_estudiada - distancia_remanente
-                    print('distancia remanenteeeeeeeeee', distancia_remanente)
 
-                    cordenada_x_inicial_seccion_via = cordenada_x_final_seccion_via
 
-                    registro_siguiente = registro_siguiente + 1
-                    print('registrosiguiente', registro_siguiente)
-                    cordenada_x_final_seccion_via = df_circuito.loc[df_circuito['Registro'] == registro_siguiente].iloc[0]['X']
-                    print('cordenada Final nueva', cordenada_x_final_seccion_via)
-                    longitud_via_estudiada = df_circuito.loc[df_circuito['Registro'] == registro_siguiente].iloc[0]['mm de via']
-                    bc = cordenada_y_inicial_seccion_via - cordenada_y_final_seccion_via
-                    ab = cordenada_x_inicial_seccion_via - cordenada_x_final_seccion_via
-                    ac = math.sqrt(pow(ab, 2) + pow(bc, 2))
-                    sen_fi = bc / ac
-                    cos_fi = 1
-                    dc = self.longitud_seccion - distancia_remanente
-                    ce = dc * sen_fi
-                    de = dc * cos_fi
-                    print('dc', dc)
 
-                    if (cordenada_x_inicial_seccion_via - cordenada_x_final_seccion_via) > 0:
-                        xrf = cordenada_x_inicial_seccion_via - dc
 
-                    else:
-                        xrf = cordenada_x_inicial_seccion_via + dc
-                    self.lista_coordenadas_xr.append(round(xrf))
-                    print("la lista añadido valor", self.lista_coordenadas_xr)
+
+        #---------------------------------------------------------
+        # cordenada_x_inicial_seccion_via = df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['X']
+        # registo_x_incial = df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['Registro']
+        # cordenada_x_final_seccion_via = df_circuito.loc[df_circuito['Registro'] == registo_x_incial + 1].iloc[0]['X']
+        # registro_siguiente = registo_x_incial
+
+        # for i in self.df_resultados.index +1:
+        #     print(i)
+        #     if i ==1 :
+        #         cordenada_x_inicial_seccion_via = df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['X']
+        #         registo_x_incial = df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['Registro']
+        #         cordenada_x_final_seccion_via = df_circuito.loc[df_circuito['Registro'] == registo_x_incial + 1].iloc[0]['X']
+        #         longitud_via_estudiada = df_circuito.loc[df_circuito['Registro'] == registo_x_incial + 1].iloc[0]['mm de via']
+        #         self.lista_coordenadas_xr.append(round(cordenada_x_inicial_seccion_via))
+        #         registro_siguiente=registro_siguiente+1
+        #
+        #     else:
+        #
+        #         print('cordenadaFinal_iffff', cordenada_x_final_seccion_via)
+        #         print('distancia rem',distancia_remanente)
+        #         print('logitud-via', longitud_via_estudiada)
+        #
+        #         if distancia_remanente + self.longitud_seccion < longitud_via_estudiada:
+        #             distancia_remanente = distancia_remanente + self.longitud_seccion
+        #
+        #             print('siiiiii')
+        #             bc = cordenada_y_inicial_seccion_via - cordenada_y_final_seccion_via
+        #             ab = cordenada_x_inicial_seccion_via - cordenada_x_final_seccion_via
+        #             ac = math.sqrt(pow(ab, 2) + pow(bc, 2))
+        #             sen_fi = bc / ac
+        #             cos_fi = 1
+        #             dc= self.longitud_seccion
+        #             dc = self.longitud_seccion - distancia_remanente
+        #             ce = dc * sen_fi
+        #             de = dc * cos_fi
+        #
+        #             if (cordenada_x_inicial_seccion_via - cordenada_x_final_seccion_via) > 0:
+        #                 xrf = self.lista_coordenadas_xr[i-2] - dc
+        #                 print("la lista", self.lista_coordenadas_xr)
+        #                 print("anterior array",self.lista_coordenadas_xr[i-2])
+        #                 print('aqui de', de)
+        #             else:
+        #                 xrf = self.lista_coordenadas_xr[i-2] + dc
+        #             self.lista_coordenadas_xr.append(round(xrf))
+        #             print("la lista añadido valor", self.lista_coordenadas_xr)
+        #         else:
+        #
+        #             print('cordenadaIncial_elseee', cordenada_x_final_seccion_via)
+        #
+        #             # self.lista_coordenadas_xr.append(round(0))
+        #             print('distancia remanente al entrar al else', distancia_remanente)
+        #             if distancia_remanente >0:
+        #                 distancia_remanente = longitud_via_estudiada - distancia_remanente
+        #             if distancia_remanente ==0:
+        #                 distancia_remanente = self.longitud_seccion
+        #             print('distancia remanenteeeeeeeeee', distancia_remanente)
+        #
+        #             cordenada_x_inicial_seccion_via = cordenada_x_final_seccion_via
+        #
+        #             registro_siguiente = registro_siguiente + 1
+        #             print('registrosiguiente', registro_siguiente)
+        #             cordenada_x_final_seccion_via = df_circuito.loc[df_circuito['Registro'] == registro_siguiente].iloc[0]['X']
+        #             print('cordenadaNueva Inicial, ')
+        #             print('cordenada Final nueva', cordenada_x_final_seccion_via)
+        #             longitud_via_estudiada = df_circuito.loc[df_circuito['Registro'] == registro_siguiente].iloc[0]['mm de via']
+        #             bc = cordenada_y_inicial_seccion_via - cordenada_y_final_seccion_via
+        #             ab = cordenada_x_inicial_seccion_via - cordenada_x_final_seccion_via
+        #             ac = math.sqrt(pow(ab, 2) + pow(bc, 2))
+        #             sen_fi = bc / ac
+        #             cos_fi = 1
+        #             dc = self.longitud_seccion - distancia_remanente
+        #             ce = dc * sen_fi
+        #             de = dc * cos_fi
+        #             print('dc', dc)
+        #
+        #             if (cordenada_x_inicial_seccion_via - cordenada_x_final_seccion_via) > 0:
+        #                 xrf = cordenada_x_inicial_seccion_via - de
+        #
+        #             else:
+        #                 xrf = cordenada_x_inicial_seccion_via + de
+        #             self.lista_coordenadas_xr.append(round(xrf))
+        #             print("la lista añadido valor", self.lista_coordenadas_xr)
 
 
 

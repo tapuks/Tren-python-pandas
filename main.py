@@ -1,7 +1,7 @@
 import math
 
 import pandas as pd
-
+import matplotlib.pyplot as plt
 
 
 class Tren:
@@ -21,15 +21,14 @@ class Tren:
         self.lista_solar_2 = []
         self.lista_solar_3 = []
         self.lista_record = []
-        self.lista_distancia_al_origen=[]
-        self.lista_distancia_al_origen_round=[]
+        self.lista_distancia_al_origen = []
+        self.lista_distancia_al_origen_round = []
         self.lista_coordenadas_xr = []
         self.lista_coordenadas_yr = []
-        self.df_resultados =[]
+        self.df_resultados = []
         self.error_RECR = 0
         self.baliza_real = 0
-        self.distancia_remanente =0
-
+        self.distancia_remanente = 0
 
     def __str__(self):
 
@@ -38,13 +37,11 @@ class Tren:
                f'\nLa segunda valiza es: {self.segundaValiza} y tiene {self.vueltas_rueda_acum_valiza2} vueltas.' \
                f'\nLa distancia del paquete es: {self.distancia_paquete}mm.' \
                f'\nEl numero de vueltas del paquete  es: {self.num_vueltas_paquete}.' \
-               f'\nEl numero_teorico_vueltas entre dos valizas: {self.numero_teorico_vueltas}'\
+               f'\nEl numero_teorico_vueltas entre dos valizas: {self.numero_teorico_vueltas}' \
                f'\nLa distancia al origen de valiza1 es: {self.distancia_origen_valiza1}' \
                f'\nLa distancia al origen de valiza2 es: {self.distancia_origen_valiza2}' \
                f'\nLa longitud de cada seccion es: {self.longitud_seccion} mm' \
                f'\nLas balizas reales que forman el paquete son baliza {self.primeraValiza} y {self.baliza_real}'
-
-
 
     def set_numero_vueltas_paquete(self):
         # Capturamos la fila de la Primera Valiza
@@ -55,7 +52,6 @@ class Tren:
             'Acum. Vuelta rueda']
         self.num_vueltas_paquete = self.vueltas_rueda_acum_valiza2 - self.vueltas_rueda_acum_valiza1
 
-
     def set_distancia_paquete(self):
         self.distancia_origen_valiza1 = df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0][
             'Distancia al origen']
@@ -63,14 +59,13 @@ class Tren:
             'Distancia al origen']
         self.distancia_paquete = self.distancia_origen_valiza2 - self.distancia_origen_valiza1
 
-
     def verificar_error_nvueltas(self):
         longitud_rueda = 37.699
         self.numero_teorico_vueltas = self.distancia_paquete / longitud_rueda
 
         # if ((ntv - self.num_vueltas_paquete)/ntv > 0.30)
         # error = (numero_teorico_vueltas - self.num_vueltas_paquete) / numero_teorico_vueltas
-        error = ( abs(self.num_vueltas_paquete-self.numero_teorico_vueltas)/self.num_vueltas_paquete)*100
+        error = (abs(self.num_vueltas_paquete - self.numero_teorico_vueltas) / self.num_vueltas_paquete) * 100
 
         if (error < 50):
             print("Todo es correcto, error del ", error, "%")
@@ -79,8 +74,7 @@ class Tren:
         else:
             print("MAL, error del ", error, "%")
             self.error_RECR += 1
-            self.baliza_real = self.segundaValiza+1
-
+            self.baliza_real = self.segundaValiza + 1
 
     def set_longitud_seccion(self):
         self.longitud_seccion = self.distancia_paquete / self.num_vueltas_paquete
@@ -88,7 +82,7 @@ class Tren:
     def get_fecha_and_solars_and_record(self):
         for i in range(self.vueltas_rueda_acum_valiza1, self.vueltas_rueda_acum_valiza2 + 1):
             self.lista_fecha_hora.append(df_medicion.loc[df_medicion['Acum. Vuelta rueda'] == i].iloc[0][
-                                        'Fecha'])
+                                             'Fecha'])
             self.lista_solar_1.append(df_medicion.loc[df_medicion['Acum. Vuelta rueda'] == i].iloc[0]['Solar1'])
             self.lista_solar_2.append(df_medicion.loc[df_medicion['Acum. Vuelta rueda'] == i].iloc[0]['Solar2'])
             self.lista_solar_3.append(df_medicion.loc[df_medicion['Acum. Vuelta rueda'] == i].iloc[0]['Solar3'])
@@ -107,22 +101,21 @@ class Tren:
         for e in self.lista_distancia_al_origen:
             self.lista_distancia_al_origen_round.append(round(e))
 
-
-
     def new_dataframe_resultados(self):
         self.df_resultados = pd.DataFrame(
-            {'Fecha y hora': self.lista_fecha_hora,'Record': self.lista_record, 'Red solar 1': self.lista_solar_1, 'Red solar 2': self.lista_solar_2, 'Red solar 3': self.lista_solar_3,
-        'D.O': self.lista_distancia_al_origen_round})
+            {'Fecha y hora': self.lista_fecha_hora, 'Record': self.lista_record, 'Red solar 1': self.lista_solar_1,
+             'Red solar 2': self.lista_solar_2, 'Red solar 3': self.lista_solar_3,
+             'D.O': self.lista_distancia_al_origen_round})
 
         print(df_circuito)
 
     def get_coordenadas_xr_yr(self):
-        #VARIABLES
+        # VARIABLES
         cordenada_x_inicial_seccion_via = 0
         registo_x_incial = 0
         cordenada_x_final_seccion_via = 0
         cordenada_y_inicial_seccion_via = 0
-        cordenada_y_final_seccion_via =0
+        cordenada_y_final_seccion_via = 0
         registro_siguiente = 0
         longitud_via_estudiada = 0
         xrf = 0
@@ -157,13 +150,15 @@ class Tren:
         # ce = dc * sen_fi
         # de = dc * cos_fi
 
-        #---------------------------------------------------------
-        cordenada_x_inicial_seccion_via = df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['X']
+        # ---------------------------------------------------------
+        cordenada_x_inicial_seccion_via = df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0][
+            'X']
         registo_x_incial = df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['Registro']
         cordenada_x_final_seccion_via = df_circuito.loc[df_circuito['Registro'] == registo_x_incial + 1].iloc[0]['X']
-        cordenada_y_inicial_seccion_via = df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['Y']
+        cordenada_y_inicial_seccion_via = df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0][
+            'Y']
         cordenada_y_final_seccion_via = df_circuito.loc[df_circuito['Registro'] == registo_x_incial + 1].iloc[0]['Y']
-        registro_siguiente = registo_x_incial +1
+        registro_siguiente = registo_x_incial + 1
         contador = 0
         self.lista_coordenadas_xr.append(round(cordenada_x_inicial_seccion_via))
         self.lista_coordenadas_yr.append(round(cordenada_y_inicial_seccion_via))
@@ -174,13 +169,11 @@ class Tren:
         while True:
 
             print(contador)
-            if len(self.lista_coordenadas_xr) ==len(self.lista_solar_1):
+            if len(self.lista_coordenadas_xr) == len(self.lista_solar_1):
                 break
-            if contador==16:
+            if contador == 16:
                 print("contador 14")
             if seccion_new == True:
-
-
                 bc = cordenada_y_inicial_seccion_via - cordenada_y_final_seccion_via
                 ab = cordenada_x_inicial_seccion_via - cordenada_x_final_seccion_via
                 ac = math.sqrt(pow(ab, 2) + pow(bc, 2))
@@ -197,23 +190,21 @@ class Tren:
                 de = dc * cos_fi
                 contador = contador + 1
                 if (cordenada_x_inicial_seccion_via - cordenada_x_final_seccion_via) > 0:
-                    if contador ==1:
+                    if contador == 1:
                         xrf = cordenada_x_inicial_seccion_via - de
                     else:
-                        xrf = self.lista_coordenadas_xr[contador-1] - de
+                        xrf = self.lista_coordenadas_xr[contador - 1] - de
                 else:
-                    xrf = self.lista_coordenadas_xr[contador-1] + de
+                    xrf = self.lista_coordenadas_xr[contador - 1] + de
 
                 if (cordenada_y_inicial_seccion_via - cordenada_y_final_seccion_via) > 0:
-                    if contador ==1:
+                    if contador == 1:
                         yrf = cordenada_y_inicial_seccion_via - ce
                     else:
-                        yrf = self.lista_coordenadas_yr[contador-1] - ce
+                        yrf = self.lista_coordenadas_yr[contador - 1] - ce
 
                 else:
-                     yrf = self.lista_coordenadas_yr[contador-1] + ce
-
-
+                    yrf = self.lista_coordenadas_yr[contador - 1] + ce
 
                 self.lista_coordenadas_xr.append(round(xrf))
                 self.lista_coordenadas_yr.append(round(yrf))
@@ -225,31 +216,32 @@ class Tren:
 
                 print('dist rem', distancia_remanente)
             else:
-                seccion_new= True
+                seccion_new = True
                 print(self.lista_coordenadas_xr)
                 if distancia_remanente > 0:
                     distancia_remanente = longitud_via_estudiada - distancia_remanente
-                if distancia_remanente ==0:
+                if distancia_remanente == 0:
                     distancia_remanente = self.longitud_seccion
                     print('distancia remanenteeeeeeeeee', distancia_remanente)
                 cordenada_x_inicial_seccion_via = cordenada_x_final_seccion_via
                 cordenada_y_inicial_seccion_via = cordenada_y_final_seccion_via
 
                 registro_siguiente = registro_siguiente + 1.
-                cordenada_x_final_seccion_via = df_circuito.loc[df_circuito['Registro'] == registro_siguiente].iloc[0]['X']
-                cordenada_y_final_seccion_via = df_circuito.loc[df_circuito['Registro'] == registro_siguiente].iloc[0]['Y']
+                cordenada_x_final_seccion_via = df_circuito.loc[df_circuito['Registro'] == registro_siguiente].iloc[0][
+                    'X']
+                cordenada_y_final_seccion_via = df_circuito.loc[df_circuito['Registro'] == registro_siguiente].iloc[0][
+                    'Y']
 
-                longitud_via_estudiada = df_circuito.loc[df_circuito['Registro'] == registro_siguiente].iloc[0]['mm de via']
+                longitud_via_estudiada = df_circuito.loc[df_circuito['Registro'] == registro_siguiente].iloc[0][
+                    'mm de via']
 
+    def show_array_coordenada_x(self):
+        return self.lista_coordenadas_xr
 
+    def show_array_coordenada_y(self):
+        return self.lista_coordenadas_yr
 
-
-
-
-
-
-
-        #---------------------------------------------------------
+        # ---------------------------------------------------------
         # cordenada_x_inicial_seccion_via = df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['X']
         # registo_x_incial = df_circuito.loc[df_circuito['Valizas Acum.'] == self.primeraValiza].iloc[0]['Registro']
         # cordenada_x_final_seccion_via = df_circuito.loc[df_circuito['Registro'] == registo_x_incial + 1].iloc[0]['X']
@@ -332,23 +324,6 @@ class Tren:
         #             self.lista_coordenadas_xr.append(round(xrf))
         #             print("la lista añadido valor", self.lista_coordenadas_xr)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         # for i in self.df_resultados.index :
         #     print(i)
         #     if i != 0:
@@ -425,13 +400,7 @@ class Tren:
         #
         #          self.lista_coordenadas_xr.append(round(xrf))
 
-
-
         print(self.lista_coordenadas_xr)
-
-
-
-
 
         #     dc = self.df_resultados['D.O'][i]-688
         #     sen = 0
@@ -459,14 +428,6 @@ class Tren:
         #
         # self.df_resultados['Xr'] = self.lista_coordenadas_xr
         # self.df_resultados['Yr'] = self.lista_coordenadas_yr
-
-
-
-
-
-
-
-
 
     # def newdataFrame(self):
     #     # VARIABLES
@@ -555,26 +516,23 @@ class Tren:
     #     print(df)
 
 
-
-
-
-
-
 # ------------BLOQUE PRINCIPAL-----------------
 
 
 # Lectura de ficheros
 df_medicion = pd.read_table('data/CR800 LT directe_Table100930 0718.dat', sep=",", skiprows=4, header=None,
                             encoding='unicode_escape')
-nombres_columna = ['Fecha', 'numero', 'Vol. Bat', 'Solar1', 'Solar2', 'Solar3', 'Vuelta rueda', 'Acum. Vuelta rueda','Nº Valizas','Nº Valizas Acum']
+nombres_columna = ['Fecha', 'numero', 'Vol. Bat', 'Solar1', 'Solar2', 'Solar3', 'Vuelta rueda', 'Acum. Vuelta rueda',
+                   'Nº Valizas', 'Nº Valizas Acum']
 df_medicion.columns = nombres_columna
 
 df_circuito = pd.read_csv('data/CCLT_100930_Mollerussa.csv', header=None)
 nombres_columna = ['Registro', 'Via', 'X', 'Y', 'Valizas Acum.', 'Valiza', 'mm de via', 'Distancia al origen', '???']
 df_circuito.columns = nombres_columna
+
+
 valiza1 = int(input("Selección la valiza"))
-# valiza2 = int(input("Selección de la segunda valiza"))
-valiza2 = valiza1+1
+valiza2 = valiza1 + 1
 
 tren1 = Tren(valiza1, valiza2)
 tren1.set_numero_vueltas_paquete()
@@ -588,10 +546,30 @@ tren1.get_distancia_al_origen()
 tren1.new_dataframe_resultados()
 
 tren1.get_coordenadas_xr_yr()
+#
+# # REPRESENTACION GRAFICA
+# array_x = tren1.show_array_coordenada_x()
+# array_y = tren1.show_array_coordenada_y()
+#
+# print('EL ARRAY X', array_x)
+#
+#
+#
+#
+#
+# plt.scatter(array_x, array_y)
+# plt.xlabel("X")
+# plt.ylabel("Y")
+# plt.title("Representacion puntos de la baliza")
+# plt.show()
+
 
 
 
 # INSTANCIAMOS PAQUETES DEL 3 AL 5
+# lista_coordenadas_x = []
+# lista_coordenadas_y = []
+#
 # objs = list()
 # for i in range(3):
 #     objs.append(Tren(i+3, i+4))
@@ -606,8 +584,22 @@ tren1.get_coordenadas_xr_yr()
 #     obj.get_distancia_al_origen()
 #     obj.new_dataframe_resultados()
 #     obj.get_coordenadas_xr_yr()
-
-
-
-
-
+#     x= obj.show_array_coordenada_x()
+#     for i in x:
+#         lista_coordenadas_x.append(i)
+#
+#     y = obj.show_array_coordenada_y()
+#     for i in y:
+#         lista_coordenadas_y.append(i)
+#
+#
+# print('\n\n\n\n\n\n\n\n\n\n\n')
+#
+# print(lista_coordenadas_x)
+# print(lista_coordenadas_y)
+#
+# plt.scatter(lista_coordenadas_x, lista_coordenadas_y)
+# plt.xlabel("X")
+# plt.ylabel("Y")
+# plt.title("Representacion puntos de la baliza")
+# plt.show()

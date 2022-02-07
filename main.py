@@ -151,8 +151,8 @@ class Tren:
 
                 seccion_new = False
 
-                if distancia_sobrante_vuelta_rueda_anterior > longitud_via_estudiada:
-                    distancia_remanente = distancia_remanente + longitud_via_estudiada
+            if distancia_remanente + longitud_via_estudiada < self.vuelta_rueda:
+                distancia_remanente = distancia_remanente + longitud_via_estudiada
 
 
             if distancia_remanente + self.vuelta_rueda < longitud_via_estudiada:
@@ -197,7 +197,7 @@ class Tren:
                 if distancia_remanente == 0:
                     distancia_remanente = self.vuelta_rueda
                     print('distancia remanenteeeeeeeeee', distancia_remanente)
-                distancia_sobrante_vuelta_rueda_anterior = self.vuelta_rueda - distancia_remanente
+
                 cordenada_x_inicial_seccion_via = cordenada_x_final_seccion_via
                 cordenada_y_inicial_seccion_via = cordenada_y_final_seccion_via
 
@@ -209,6 +209,15 @@ class Tren:
 
                 longitud_via_estudiada = df_circuito.loc[df_circuito['Registro'] == registro_siguiente].iloc[0][
                     'mm de via']
+
+                    # cordenada_x_inicial_seccion_via = cordenada_x_final_seccion_via
+                    # cordenada_y_inicial_seccion_via = cordenada_y_final_seccion_via
+                    # registro_siguiente = registro_siguiente + 1.
+                    # cordenada_x_final_seccion_via = df_circuito.loc[df_circuito['Registro'] == registro_siguiente].iloc[0]['X']
+                    # cordenada_y_final_seccion_via = df_circuito.loc[df_circuito['Registro'] == registro_siguiente].iloc[0]['Y']
+                    # longitud_via_estudiada = df_circuito.loc[df_circuito['Registro'] == registro_siguiente].iloc[0]['mm de via']
+
+
 
     def show_array_coordenada_x(self):
         return self.lista_coordenadas_xr
